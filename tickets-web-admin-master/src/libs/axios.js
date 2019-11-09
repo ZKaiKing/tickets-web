@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { getStore, setStore,localStore } from './storage';
 
 // 统一请求路径前缀
-let base = '/distribution';
+let base = '/tickets';
 
 // 超时设定
 axios.defaults.timeout = 15000;

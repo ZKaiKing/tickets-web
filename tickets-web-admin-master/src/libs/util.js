@@ -22,7 +22,7 @@ let util = {};
 util.initRouter = function (vm) {
   const constRoutes = [];
   getMenuList().then(res => {
-    let menuData = res.result;
+    let menuData = res.data;
     if (!menuData) return;
     util.initAllMenuData(constRoutes, menuData);
     // vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
@@ -63,12 +63,12 @@ util.initRouterNode = function (routers, data) {
       let meta = {};
       // 给页面添加权限、标题、第三方网页链接
       meta.permTypes = menu.permTypes ? menu.permTypes : null;
-      meta.title = menu.title ? menu.title + "-葱鸭后台管理系统" : null;
+      meta.title = menu.title ? menu.title + "-演唱会门票后台管理系统" : null;
       menu.meta = meta;
 
       routers.push(menu);
   }
-  console.log(routers);
+  // console.log(routers);
 };
 
 }

@@ -9,17 +9,35 @@ Vue.use(Router);
 const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
-  routes: [{
+  routes: [
+    {
     path: "/home",
     name: "home",
     component: Home,
-    redirect: '/audit-brand',
-    children: [{
-        path: '/audit-brand',
-        name: "AuditBrand",
+    // redirect: '/audit-brand',
+    children: [
+      // {
+      //   path: '/audit-brand',
+      //   name: "AuditBrand",
+      //   component: () =>
+      //     import("./views/goods/AuditBrand.vue")
+      // },
+
+      //系统管理
+      {
+        path: '/role-manage',
+        name: "role-manage",
         component: () =>
-          import("./views/goods/AuditBrand.vue")
+          import("./views/system/RoleManage.vue")
       },
+      {
+        path: '/account-manage',
+        name: "account-manage",
+        component: () =>
+          import("./views/system/UserManage.vue")
+      },
+
+
       {
         path: '/brand-label',
         name: "BrandLabel",
@@ -110,16 +128,16 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  let authorization = localStore.getAuthorization()
+  let authorization = localStore.getAuthorization();
   if (!authorization && to.path !== "/login") {
-    localStore.clear()
-    next("/login")
+    localStore.clear();
+    next("/login");
   } else if (authorization && to.path == "/login") {
-    let lastRoute = localStore.getLastRoute()
-    next(lastRoute)
+    let lastRoute = localStore.getLastRoute();
+    next(lastRoute);
   } else {
-    localStore.setLastRoute(to.path)
+    localStore.setLastRoute(to.path);
     next()
   }
-})
-export default router
+});
+export default router;

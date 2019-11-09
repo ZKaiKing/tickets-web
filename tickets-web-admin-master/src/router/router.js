@@ -5,7 +5,7 @@ export const loginRouter = {
     path: '/login',
     name: 'login',
     meta: {
-        title: '登录-葱鸭后台管理系统 '
+        title: '登录-演唱会票务后台管理系统 '
     },
     component: () => import('@/views/Login.vue')
 }

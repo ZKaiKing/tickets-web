@@ -3,7 +3,7 @@
     <Col :xs="{span:22}" style="width: 368px;">
     <Row class="header">
       <!-- <img src="../assets/xboot.png" width="220px" /> -->
-      <div class="description">葱鸭后台管理系统</div>
+      <div class="description">门票后台管理系统</div>
     </Row>
 
     <Alert type="error" show-icon v-if="error">{{errorMsg}}</Alert>
@@ -48,7 +48,7 @@
         form: {
           username: "",
           password: "",
-          loginType: "MANAGE",
+          loginType: "MANAGE_PASSWORD",
           code: ""
         },
         rules: {
@@ -76,32 +76,17 @@
         this.$refs.usernameLoginForm.validate(valid => {
           if (valid) {
             this.loading = true;
-            login({
-              username: this.form.username,
-              password: this.form.password,
-              loginType: this.form.loginType,
-              saveLogin: this.saveLogin
-            }).then(res => {
+            let params = {};
+            params.username = this.form.username;
+            params.password = this.form.password;
+            params.saveLogin = this.saveLogin;
+            params.loginType = this.form.loginType;
+            login(params).then(res => {
               if (res.resultCode == 'SUCCESS') {
                 this.setStore("accessToken", res.data);
                 getUserInfo().then(res => { // 获取用户信息
                   if (res.success = true) {
-                    let roles = [];
-                    res.result.roles.forEach(element => {
-                      roles.push(element.name);
-                    });
-                    this.setStore("roles", roles);
-                    // if (this.saveLogin) {
-                    //   // 保存7天
-                    //   console.log("a" + res.result);
-                    //   console.log("b" +JSON.stringify(res.result));
-                    //   Cookies.set("userInfo", JSON.stringify(res.result), {
-                    //     expires: 7
-                    //   });
-                    // } else {
-                    //   Cookies.set("userInfo", JSON.stringify(res.result));
-                    // }
-                    this.setStore("userInfo", res.result);
+                    this.setStore("userInfo", res.data);
                     // 加载菜单
                     // util.initRouter(this);
                     this.$router.push({

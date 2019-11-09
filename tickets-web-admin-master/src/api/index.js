@@ -9,7 +9,7 @@ import {
 } from '@/libs/axios';
 
 // 文件上传接口
-export const uploadFile = '/distribution/upload/file'
+export const uploadFile = '/tickets/upload/file'
 
 const importBaseUrl = '/distribution/supplier/product'
 // 导入商品财务信息
@@ -26,14 +26,17 @@ export const importOperate = importBaseUrl + '/operate'
 
 // 登陆
 export const login = (params) => {
-  return postRequest('/login', params)
+  return postPureRequest('/login/self', params)
 }
-// 获取菜单
+//权限管理 
+let permissionInfo = '/manage/permission/'
+
 export const getMenuList = (params) => {
-  return getRequest('/sys-permission-po/getMenuList', params)
+  return getRequest(permissionInfo+'getUserMenuList', params)
 }
+
 //用户信息
-let adminUserInfo = '/sys-user-po/';
+let adminUserInfo = '/manage/user/';
 export const getUserInfo = (params) => {
   return getRequest(adminUserInfo + 'info', params)
 }
@@ -41,7 +44,28 @@ export const updatePassword = (params) => { //修改密码
   return postRequest(adminUserInfo + 'modifyPass', params)
 }
 export const logout = () => { //登出
-  return getRequest('/common/logout', {})
+  return getRequest('/security/logout', {})
+}
+
+//角色管理
+let roleInfo = '/manage/role/'
+export const searchRole = (params) =>{//分页条件查询角色信息
+  return postPureRequest(roleInfo + 'searchRole',params)
+}
+export const delByIds = (ids,params) =>{//批量删除角色信息
+  return getRequest(roleInfo + `delByIds/${ids}`,params)
+}
+export const getPermission = (roleId,params) =>{//获取角色对应的权限(页面+操作)
+  return getRequest(roleInfo + `getPermission/${roleId}`,params)
+}
+export const saveRole = (params) =>{//保存角色信息
+  return postPureRequest(roleInfo + 'saveRole',params)
+}
+export const saveRolePermissions = (params) =>{//添加/编辑角色分配菜单权限
+  return postPureRequest(roleInfo + 'saveRolePermissions',params)
+}
+export const setDefaultRole = (params) =>{//设置默认角色
+  return postPureRequest(roleInfo + 'setDefaultRole',params)
 }
 
 
