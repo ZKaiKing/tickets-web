@@ -69,6 +69,19 @@ export const setDefaultRole = (params) =>{//设置默认角色
 }
 
 
+//意见反馈管理
+let feedBack = "/manage/feedBack/";
+export const searchFeedBack = (params) => {
+  return postPureRequest(feedBack + "searchFeedBack", params);
+};
+export const dealWithFeedBack = (params) => {
+  return getRequest(feedBack + `dealWithFeedBack/${params}`);
+};
+//订单列表
+export const searchOrderList = (params) => {
+  return postPureRequest("/manage/order/searchOrderList", params);
+};
+
 //商品属性管理
 let goodsAttr = '/manage/product/attribute/';
 export const getGoodsAttrListByType = (params) => {
