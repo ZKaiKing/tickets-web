@@ -9,7 +9,7 @@ import {
 } from '@/libs/axios';
 
 // 文件上传接口
-export const uploadFile = '/tickets/upload/file'
+export const uploadFile = '/tickets/common/file/qiniu/upload'
 
 const importBaseUrl = '/distribution/supplier/product'
 // 导入商品财务信息
@@ -26,48 +26,65 @@ export const importOperate = importBaseUrl + '/operate'
 
 // 登陆
 export const login = (params) => {
-  return postPureRequest('/login/self', params)
-}
+  return postPureRequest('/login/self', params);
+};
 //权限管理 
-let permissionInfo = '/manage/permission/'
+let permissionInfo = '/manage/permission/';
 
 export const getMenuList = (params) => {
-  return getRequest(permissionInfo+'getUserMenuList', params)
-}
+  return getRequest(permissionInfo+'getUserMenuList', params);
+};
 
 //用户信息
 let adminUserInfo = '/manage/user/';
-export const getUserInfo = (params) => {
-  return getRequest(adminUserInfo + 'info', params)
-}
+export const getUserInfo = (params) => { //获取当前登录用户信息
+  return getRequest(adminUserInfo + 'info', params);
+};
+export const deleteUsers = (ids,params) => {//批量删除用户
+  return getRequest(adminUserInfo + `delUsersByIds/${ids}`, params);
+};
+export const editEnabledUser = (params) => {//启用/禁用用户
+  return postPureRequest(adminUserInfo + 'editEnabledUser', params);
+};
 export const updatePassword = (params) => { //修改密码
-  return postRequest(adminUserInfo + 'modifyPass', params)
-}
+  return postPureRequest(adminUserInfo + 'editPassword', params);
+};
+export const saveUser = (params) => {//保存用户
+  return postPureRequest(adminUserInfo + 'saveUser', params);
+};
+export const searchUsers = (params) => {//条件分页查询用户
+  return postPureRequest(adminUserInfo + 'searchUsers', params);
+};
+export const searchAppletUsers = (params) => {//条件分页查询Applet用户
+  return postPureRequest(adminUserInfo + 'searchAppletUsers', params);
+};
 export const logout = () => { //登出
-  return getRequest('/security/logout', {})
-}
+  return getRequest('/security/logout', {});
+};
 
 //角色管理
 let roleInfo = '/manage/role/'
 export const searchRole = (params) =>{//分页条件查询角色信息
-  return postPureRequest(roleInfo + 'searchRole',params)
-}
+  return postPureRequest(roleInfo + 'searchRole',params);
+};
 export const delByIds = (ids,params) =>{//批量删除角色信息
-  return getRequest(roleInfo + `delByIds/${ids}`,params)
-}
+  return getRequest(roleInfo + `delByIds/${ids}`,params);
+};
 export const getPermission = (roleId,params) =>{//获取角色对应的权限(页面+操作)
-  return getRequest(roleInfo + `getPermission/${roleId}`,params)
-}
+  return getRequest(roleInfo + `getPermission/${roleId}`,params);
+};
 export const saveRole = (params) =>{//保存角色信息
-  return postPureRequest(roleInfo + 'saveRole',params)
-}
+  return postPureRequest(roleInfo + 'saveRole',params);
+};
 export const saveRolePermissions = (params) =>{//添加/编辑角色分配菜单权限
-  return postPureRequest(roleInfo + 'saveRolePermissions',params)
-}
+  return postPureRequest(roleInfo + 'saveRolePermissions',params);
+};
 export const setDefaultRole = (params) =>{//设置默认角色
-  return postPureRequest(roleInfo + 'setDefaultRole',params)
-}
-
+  return postPureRequest(roleInfo + 'setDefaultRole',params);
+};
+export const getAllRoleList = (params) =>{//获取全部角色
+  return getRequest(roleInfo + 'getAllRoleList',params);
+};
 
 //商品属性管理
 let goodsAttr = '/manage/product/attribute/';

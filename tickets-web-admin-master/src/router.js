@@ -34,6 +34,12 @@ const router = new Router({
         path: '/account-manage',
         name: "account-manage",
         component: () =>
+          import("./views/system/AccountManage.vue")
+      },
+      {
+        path: '/user-manage',
+        name: "user-manage",
+        component: () =>
           import("./views/system/UserManage.vue")
       },
 

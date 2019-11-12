@@ -15,7 +15,8 @@ export const weekDays = {
 //性别
 export const sex={
   WOMAN:{describe: "女",flag:0},
-  MAX:{describe: "男",flag:1}
+  MAX:{describe: "男",flag:1},
+  PRIVARY:{describe: "保密",flag:2}
 }
 
 //运费审核状态
