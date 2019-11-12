@@ -43,6 +43,20 @@ const router = new Router({
           import("./views/system/UserManage.vue")
       },
 
+      //意见反馈
+      {
+        path: '/feed-back-manage',
+        name: "feed-back-manage",
+        component: () =>
+          import("./views/feedBack/FeedBack.vue")
+      },
+      //订单管理
+      {
+        path: '/order-manage',
+        name: "order-manage",
+        component: () =>
+          import("./views/order/Order.vue")
+      },
 
       {
         path: '/brand-label',
