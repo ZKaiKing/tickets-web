@@ -98,11 +98,10 @@ export const dealWithFeedBack = (params) => {
 export const searchOrderList = (params) => {
   return postPureRequest("/manage/order/searchOrderList", params);
 };
-<<<<<<< HEAD
 //系统流水
 export const searchAccountLog = (params) => {
   return postPureRequest("/manage/order/searchAccountLog", params);
-=======
+}
 //门票管理
 let ticketsInfo = "/manage/ticket/";
 export const searchTicketList = (params) =>{
@@ -113,7 +112,6 @@ export const saveTicket = (params) =>{
 };
 export const getTicket = (ticketId,params) =>{
   return getRequest(ticketsInfo + `getTicket/${ticketId}`, params);
->>>>>>> 757b6634d349e5c0d84d154863a5c601b7eaf438
 };
 
 //商品属性管理
