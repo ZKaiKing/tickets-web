@@ -35,12 +35,12 @@
       <Row>
         <Table border ref="table" :columns="columns" :data="tableData" :loading="loading" @on-selection-change="saveSelect">
           <template slot-scope="{ row }" slot="orderState">
-            <Badge v-if="row.orderState === 1" text="待付款" />
-            <Badge v-if="row.orderState === 2" text="已取消" />
-            <Badge v-if="row.orderState === 3" text="待消费" />
-            <Badge v-if="row.orderState === 4" text="已完成" />
-            <Badge v-if="row.orderState === 5" text="退款中" />
-            <Badge v-if="row.orderState === 6" text="已退款" />
+            <label v-if="row.orderState === 1" text="待付款" />
+            <label v-if="row.orderState === 2" text="已取消" />
+            <label v-if="row.orderState === 3" text="待消费" />
+            <label v-if="row.orderState === 4" text="已完成" />
+            <label v-if="row.orderState === 5" text="退款中" />
+            <label v-if="row.orderState === 6" text="已退款" />
           </template>
           <template slot-scope="{ row }" slot="action">
             <Button type="primary" size="small" @click="editData(row)">查看</Button>
