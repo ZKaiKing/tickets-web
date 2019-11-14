@@ -201,7 +201,6 @@ export default {
     },
     mounted() {
         this.getDataList();
-        this.getRoleList();
     }
 };
 </script>

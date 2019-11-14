@@ -98,6 +98,17 @@ export const dealWithFeedBack = (params) => {
 export const searchOrderList = (params) => {
   return postPureRequest("/manage/order/searchOrderList", params);
 };
+//门票管理
+let ticketsInfo = "/manage/ticket/";
+export const searchTicketList = (params) =>{
+  return postPureRequest(ticketsInfo + "searchTicketList", params);
+};
+export const saveTicket = (params) =>{
+  return postPureRequest(ticketsInfo + "saveTicket", params);
+};
+export const getTicket = (ticketId,params) =>{
+  return getRequest(ticketsInfo + `getTicket/${ticketId}`, params);
+};
 
 //商品属性管理
 let goodsAttr = '/manage/product/attribute/';

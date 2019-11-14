@@ -57,6 +57,20 @@ const router = new Router({
         component: () =>
           import("./views/order/Order.vue")
       },
+      //流水
+      {
+        path: '/account-log-manage',
+        name: "account-log-manage",
+        component: () =>
+          import("./views/order/AccountLog.vue")
+      },
+      //门票
+      {
+        path: '/tickets-manage',
+        name: "tickets-manage",
+        component: () =>
+          import("./views/tickets/TicketsManage.vue")
+      },
 
       {
         path: '/brand-label',
