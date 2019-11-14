@@ -57,12 +57,26 @@ const router = new Router({
         component: () =>
           import("./views/order/Order.vue")
       },
+<<<<<<< HEAD
+=======
+      //流水
+>>>>>>> 757b6634d349e5c0d84d154863a5c601b7eaf438
       {
         path: '/account-log-manage',
         name: "account-log-manage",
         component: () =>
           import("./views/order/AccountLog.vue")
       },
+<<<<<<< HEAD
+=======
+      //门票
+      {
+        path: '/tickets-manage',
+        name: "tickets-manage",
+        component: () =>
+          import("./views/tickets/TicketsManage.vue")
+      },
+>>>>>>> 757b6634d349e5c0d84d154863a5c601b7eaf438
 
       {
         path: '/brand-label',

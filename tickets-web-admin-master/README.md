@@ -1,4 +1,4 @@
-# congya-web-admin-master
+# tickets-web-admin-master
 
 ## Project setup
 ```
