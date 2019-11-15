@@ -98,6 +98,10 @@ export const dealWithFeedBack = (params) => {
 export const searchOrderList = (params) => {
   return postPureRequest("/manage/order/searchOrderList", params);
 };
+//系统流水
+export const searchAccountLog = (params) => {
+  return postPureRequest("/manage/order/searchAccountLog", params);
+}
 //门票管理
 let ticketsInfo = "/manage/ticket/";
 export const searchTicketList = (params) =>{
