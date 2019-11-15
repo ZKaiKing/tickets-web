@@ -79,9 +79,20 @@
           <FormItem label="演出地址" prop="location" style="width:250px">
             <Cascader v-model="ticketForm.location" :data="areaData" filterable placeholder="请选择"></Cascader>
           </FormItem>
-          <FormItem label="详细地址" prop="addrDetail"> 
+          <!-- <template slot="locations">
+            <Cascader v-model="ticketForm.location" :data="areaData" filterable placeholder="请选择"></Cascader>
+          </template> -->
+
+          <FormItem label="详细地址" prop="addrDetail" style="width:500px"> 
             <Input v-model="ticketForm.addrDetail" placeholder="请输入演唱会详细地址" />
+            <button @click="codeAddress()">search</button>
           </FormItem>
+          <div id="container" style="width:800px;height:500px;">
+          </div>
+          <!-- <div id ="demo">aass</div>
+          <div id ="pos-area">
+            <button onClick="getCurLocation()">获取精确定位信息</button>
+          </div> -->
           <FormItem label="演唱会排序:" prop="sort">
             <InputNumber :min="0" :step="0.01" :precision="2" :active-change='false' v-model="ticketForm.sort" />
           </FormItem>
@@ -197,6 +208,69 @@ export default {
         };
     },
     methods: {
+      init() {
+        var geocoder,marker = null;
+        //定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
+        var map = new qq.maps.Map(document.getElementById("container"), {
+            center: new qq.maps.LatLng(39.916527,116.397128),      // 地图的中心地理坐标。
+            zoom:8                                                 // 地图的中心地理坐标。
+        });
+        //调用地址解析类
+        geocoder = new qq.maps.Geocoder({
+            complete : function(result){
+                map.setCenter(result.detail.location);
+                var marker = new qq.maps.Marker({
+                    map:map,
+                    position: result.detail.location
+                });
+            }
+        });
+        //绑定单击事件添加参数
+        qq.maps.event.addListener(map, 'click', function(event) {
+            alert('您点击的位置为: [' + event.latLng.getLat() + ', ' +
+            event.latLng.getLng() + ']');
+        });
+      },
+      codeAddress() {
+        var address = this.ticketForm.addrDetail;
+        //通过getLocation();方法获取位置信息值
+        geocoder.getLocation(address);
+         //设置服务请求成功的回调函数
+        geocoder.setComplete(function(result) {
+        console.log(result);
+        });
+         //若服务请求失败，则运行以下函数
+        geocoder.setError(function() {
+            alert("出错了，请输入正确的地址！！！");
+        });
+      },
+      // getCurLocation() {
+      //   var geolocation = new qq.maps.Geolocation();
+      //   document.getElementById("pos-area").style.height = (document.body.clientHeight - 110) + 'px';
+      //   geolocation.getLocation(showPosition, showErr, options);
+      // },
+      // showPosition(position) {
+      //   positionNum ++;
+      //   document.getElementById("demo").innerHTML += "序号：" + positionNum;
+      //   document.getElementById("demo").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(position, null, 4);
+      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
+      // },
+      // showErr() {
+      //   positionNum ++;
+      //   document.getElementById("demo").innerHTML += "序号：" + positionNum;
+      //   document.getElementById("demo").appendChild(document.createElement('p')).innerHTML = "定位失败！";
+      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
+      // },
+      // showWatchPosition() {
+      //   document.getElementById("demo").innerHTML += "开始监听位置！<br /><br />";
+      //   geolocation.watchPosition(showPosition);
+      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
+      // },
+      // showClearWatch() {
+      //   geolocation.clearWatch();
+      //   document.getElementById("demo").innerHTML += "停止监听位置！<br /><br />";
+      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
+      // },
       getAreaInfo() {
 				axios.get('../static/data/areas.json').then(res => {
 					let areaData = res.data
@@ -302,6 +376,8 @@ export default {
         this.submitLoading = false;
       },
       addData() {
+        //调用初始化函数地图
+        this.init();
         this.modalType = 0;
         this.modalTitle = "添加门票";
         this.$refs.ticketForm.resetFields();
@@ -325,7 +401,8 @@ export default {
           this.ticketForm.ticketSceneList = res.data.ticketSceneInfoList;
           this.ticketForm.ticketId = res.data.ticketId;
           this.ticketForm.addrId = res.data.addrId;
-          this.ticketForm.addrName = res.data.addrName.split("/");
+          this.ticketForm.location = res.data.addrIds;
+          this.ticketForm.addrName = res.data.addrName.split(",");
           this.ticketForm.addrDetail = res.data.addrDetail;
           this.ticketForm.detailHtml = res.data.detailHtml;
           this.ticketForm.latitude = res.data.latitude;
@@ -358,6 +435,7 @@ export default {
                 self.submitLoading = false;
                 self.$Message.success("保存成功");
                 self.ticketModalVisible = false;
+                this.getDataList();
               } else {
                 self.$Message.error({
                   content: '保存失败：' + res.message,

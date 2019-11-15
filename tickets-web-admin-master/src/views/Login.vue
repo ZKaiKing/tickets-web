@@ -43,7 +43,7 @@
       return {
         error: false,
         errorMsg: "",
-        saveLogin: true,
+        saveLogin: "true",
         loading: false,
         form: {
           username: "",
