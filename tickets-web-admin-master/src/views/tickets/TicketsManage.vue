@@ -77,15 +77,29 @@
             </Card>
           </div>
           <FormItem label="演出地址" prop="location" style="width:250px">
-            <Cascader v-model="ticketForm.location" :data="areaData" filterable placeholder="请选择"></Cascader>
+            <Cascader v-model="ticketForm.location" :data="areaData" @on-change="handleArea" filterable placeholder="请选择"></Cascader>
           </FormItem>
           <!-- <template slot="locations">
             <Cascader v-model="ticketForm.location" :data="areaData" filterable placeholder="请选择"></Cascader>
           </template> -->
 
           <FormItem label="详细地址" prop="addrDetail" style="width:500px"> 
-            <Input v-model="ticketForm.addrDetail" placeholder="请输入演唱会详细地址" />
-            <button @click="codeAddress()">search</button>
+            <Row :gutter="24">
+              <Col span="18">
+                <Input v-model="ticketForm.addrDetail" placeholder="请输入演唱会详细地址" />
+              </Col>
+              <Col span="5">
+                <Button @click="codeAddress()">search</Button>
+              </Col>
+            </Row>
+            <Row :gutter="16">
+              <Col span="8">
+                <div>经度:{{ticketForm.longitude}}</div>
+              </Col>
+              <Col span="8">
+                <div>纬度:{{ticketForm.latitude}}</div>
+              </Col>
+            </Row>
           </FormItem>
           <div id="container" style="width:800px;height:500px;">
           </div>
@@ -205,72 +219,140 @@ export default {
           modalTitle: "",
           modalVisible: false,
           areaData: [],
+          geocoder: "",
+          citylocation: ""
         };
     },
     methods: {
       init() {
-        var geocoder,marker = null;
+        const self = this;
+        var marker,longitudes,latitudes = null;
         //定义map变量 调用 qq.maps.Map() 构造函数   获取地图显示容器
         var map = new qq.maps.Map(document.getElementById("container"), {
             center: new qq.maps.LatLng(39.916527,116.397128),      // 地图的中心地理坐标。
-            zoom:8                                                 // 地图的中心地理坐标。
+            zoom:16                                                 // 地图的中心地理坐标。
         });
         //调用地址解析类
-        geocoder = new qq.maps.Geocoder({
+        self.geocoder = new qq.maps.Geocoder({
             complete : function(result){
                 map.setCenter(result.detail.location);
                 var marker = new qq.maps.Marker({
                     map:map,
+                    draggable: false,
                     position: result.detail.location
                 });
+                console.log('所在位置: ' + result.detail.location);
+                //经度
+                self.ticketForm.longitude = result.detail.location.lat;
+                //纬度
+                self.ticketForm.latitude = result.detail.location.lng;
+            }
+        });
+        //调用城市服务信息
+        self.citylocation = new qq.maps.CityService({
+            complete : function(results){
+              console.log(results);
+              console.log(results.detail.detail);
+              console.log(results.detail.latLng);
+                map.setCenter(results.detail.latLng);
+                // city.style.display = 'inline';
+                // city.innerHTML = '所在位置: ' + results.detail.name;
+          
+                if (marker != null) {
+                    marker.setMap(null);
+                }
+                //设置marker标记
+                marker = new qq.maps.Marker({
+                    map: map,
+                    draggable: false,
+                    position: results.detail.latLng
+                });
+                //获取地址信息
             }
         });
         //绑定单击事件添加参数
         qq.maps.event.addListener(map, 'click', function(event) {
+          //经度
+          longitudes = event.latLng.getLat();
+          //纬度
+          latitudes = event.latLng.getLng();
+          console.log(longitudes);
+          console.log(latitudes);
+          console.log(event);
+          //设置经纬度信息
+          var latLng = new qq.maps.LatLng(longitudes, latitudes);
+          console.log(latLng);
+          //调用城市经纬度查询接口实现经纬查询
+          self.citylocation.searchCityByLatLng(latLng);
             alert('您点击的位置为: [' + event.latLng.getLat() + ', ' +
             event.latLng.getLng() + ']');
         });
       },
       codeAddress() {
-        var address = this.ticketForm.addrDetail;
+        const self = this;
+        var address = self.ticketForm.addrDetail;
         //通过getLocation();方法获取位置信息值
-        geocoder.getLocation(address);
+        self.geocoder.getLocation(address);
          //设置服务请求成功的回调函数
-        geocoder.setComplete(function(result) {
-        console.log(result);
-        });
+        // this.geocoder.setComplete(function(result) {
+        // console.log(result);
+        // });
          //若服务请求失败，则运行以下函数
-        geocoder.setError(function() {
-            alert("出错了，请输入正确的地址！！！");
-        });
+        // this.geocoder.setError(function() {
+        //     alert("出错了，请输入正确的地址！！！");
+        // });
       },
-      // getCurLocation() {
-      //   var geolocation = new qq.maps.Geolocation();
-      //   document.getElementById("pos-area").style.height = (document.body.clientHeight - 110) + 'px';
-      //   geolocation.getLocation(showPosition, showErr, options);
+      // initMap(){
+      //   var citylocation,map,marker = null;
+      //   var center = new qq.maps.LatLng(39.916527,116.397128);
+      //   // var city = document.getElementById("city");
+      //   map = new qq.maps.Map(document.getElementById('container'),{
+      //       center: center,
+      //       zoom: 17
+      //   });
+      //   //调用城市服务信息
+      //   citylocation = new qq.maps.CityService({
+      //       complete : function(results){
+      //           map.setCenter(results.detail.latLng);
+      //           // city.style.display = 'inline';
+      //           // city.innerHTML = '所在位置: ' + results.detail.name;
+          
+      //           if (marker != null) {
+      //               marker.setMap(null);
+      //           }
+      //           //设置marker标记
+      //           marker = new qq.maps.Marker({
+      //               map: map,
+      //               position: results.detail.latLng
+      //           });
+      //       }
+      //   });
+      //   //调用地址解析类
+      //   self.geocoder = new qq.maps.Geocoder({
+      //       complete : function(result){
+      //           map.setCenter(result.detail.location);
+      //           var marker = new qq.maps.Marker({
+      //               map:map,
+      //               position: result.detail.location
+      //           });
+      //           console.log('所在位置: ' + result.detail.location);
+      //           //经度
+      //           self.ticketForm.longitude = result.detail.location.lat;
+      //           //纬度
+      //           self.ticketForm.latitude = result.detail.location.lng;
+      //       }
+      //   });
       // },
-      // showPosition(position) {
-      //   positionNum ++;
-      //   document.getElementById("demo").innerHTML += "序号：" + positionNum;
-      //   document.getElementById("demo").appendChild(document.createElement('pre')).innerHTML = JSON.stringify(position, null, 4);
-      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
-      // },
-      // showErr() {
-      //   positionNum ++;
-      //   document.getElementById("demo").innerHTML += "序号：" + positionNum;
-      //   document.getElementById("demo").appendChild(document.createElement('p')).innerHTML = "定位失败！";
-      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
-      // },
-      // showWatchPosition() {
-      //   document.getElementById("demo").innerHTML += "开始监听位置！<br /><br />";
-      //   geolocation.watchPosition(showPosition);
-      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
-      // },
-      // showClearWatch() {
-      //   geolocation.clearWatch();
-      //   document.getElementById("demo").innerHTML += "停止监听位置！<br /><br />";
-      //   document.getElementById("pos-area").scrollTop = document.getElementById("pos-area").scrollHeight;
-      // },
+      geolocation_latlng() {
+          const self = this;
+          var lat = parseFloat(self.ticketForm.longitude);
+          var lng = parseFloat(self.ticketForm.latitude);
+          //设置经纬度信息
+          var latLng = new qq.maps.LatLng(lat, lng);
+          console.log(latLng);
+          //调用城市经纬度查询接口实现经纬查询
+          self.citylocation.searchCityByLatLng(latLng);
+      },
       getAreaInfo() {
 				axios.get('../static/data/areas.json').then(res => {
 					let areaData = res.data
@@ -285,7 +367,10 @@ export default {
 					}
 					item.value = item.id
 				});
-			},
+      },
+      handleArea (value, selectedData){
+        this.ticketForm.addrDetail = selectedData.map(o => o.label).join(', ');
+      },
       initFormatter () {
         Date.prototype.Format = function (fmt) { //
           let o = {
@@ -387,8 +472,12 @@ export default {
         this.ticketForm.ticketSceneList = [];
         this.ticketForm.ticketGradeList = []
         this.ticketForm.addrName = [];
+        this.ticketForm.longitude = "";
+        this.ticketForm.latitude = "";
       },
       editData(row){
+        //调用初始化函数地图
+        this.init();
         this.modalTitle = "编辑门票信息",
         this.$refs.ticketForm.resetFields();
         this.ticketForm.location = [];
@@ -401,7 +490,7 @@ export default {
           this.ticketForm.ticketSceneList = res.data.ticketSceneInfoList;
           this.ticketForm.ticketId = res.data.ticketId;
           this.ticketForm.addrId = res.data.addrId;
-          this.ticketForm.location = res.data.addrIds;
+          this.ticketForm.location = res.data.addrIds.split(",");
           this.ticketForm.addrName = res.data.addrName.split(",");
           this.ticketForm.addrDetail = res.data.addrDetail;
           this.ticketForm.detailHtml = res.data.detailHtml;
@@ -412,6 +501,7 @@ export default {
           this.ticketForm.purchaseHtml = res.data.purchaseHtml;
           this.ticketForm.sort = res.data.sort;
           this.ticketForm.ticketGradeList = res.data.ticketGradeInfoList;
+          this.geolocation_latlng();
           }
         });
       },
