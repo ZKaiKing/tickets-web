@@ -39,7 +39,7 @@
           <template slot-scope="{ row }" slot="action">
             <Button type="primary" size="small" @click="editData(row)">编辑</Button>
             <Button v-if="row.publishState === true" type="warning" size="small" @click="publish(row)" style="margin-left: 5px">下架</Button>
-            <Button v-else size="small" type="success" @click="disable(row)" style="margin-left: 5px">上架</Button>
+            <Button v-else size="small" type="success" @click="publish(row)" style="margin-left: 5px">上架</Button>
           </template>
         </Table>
       </Row>
@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import {searchTicketList,saveTicket,getTicket} from "@/api/index";
+import {searchTicketList,saveTicket,getTicket,publishState} from "@/api/index";
 import uploadPicInput from "@/components/upload-pic-input";
 import axios from 'axios';
 import Editor from "@/components/editor";
@@ -535,35 +535,60 @@ export default {
               }
             });
           } else {
-          this.$Message.error({
-            content: "校验不通过，请按提示规则输入数据",
-            duration: 5
-          });
-        }
-      });
+            this.$Message.error({
+              content: "校验不通过，请按提示规则输入数据",
+              duration: 5
+            });
+          }
+        });
+      },
+      setParam (param){
+        const self = this;
+        let ticketScenes = [];
+        self.ticketForm.ticketSceneList.forEach(scene => {
+          if (typeof scene.startTime == "Date" || typeof scene.startTime == "object")
+            scene.startTime = scene.startTime.Format('yyyy-MM-dd hh:mm:ss');
+            let scenes = {
+              startTime: scene.startTime,
+              sceneName: scene.sceneName
+            };
+            ticketScenes.push(scenes);
+        });
+        param.ticketSceneList = ticketScenes;
+        let areaIds = self.ticketForm.location;
+        param.addrId = areaIds.length && areaIds[areaIds.length - 1];
+        param.provinceId = areaIds.length && areaIds[0];
+      },
+      publish(row) {
+        let option = row.publishState ? '下架' : '上架';
+        this.$Modal.confirm({
+          title: "提示",
+          content: "请确认是否要" + option + '演唱会: <strong> ' + row.name + '</strong> ?',
+          onOk: () => {
+            let params = {};
+            let ids = [];
+            ids.push(row.ticketId);
+            params.ids = ids;
+            params.enabled = !row.publishState;
+            publishState(params).then(res => {
+              if(res.resultCode == 'SUCCESS'){
+                this.$Message.success(option + "成功");
+                this.getDataList();
+              }else{
+                this.$Message.error({
+                  content: '操作失败：' + res.message,
+                  duration: 5
+                });
+              }
+            });
+          }
+        });
+      }
     },
-    setParam (param){
-      const self = this;
-      let ticketScenes = [];
-      self.ticketForm.ticketSceneList.forEach(scene => {
-        if (typeof scene.startTime == "Date" || typeof scene.startTime == "object")
-          scene.startTime = scene.startTime.Format('yyyy-MM-dd hh:mm:ss');
-          let scenes = {
-            startTime: scene.startTime,
-            sceneName: scene.sceneName
-          };
-          ticketScenes.push(scenes);
-      });
-      param.ticketSceneList = ticketScenes;
-      let areaIds = self.ticketForm.location;
-      param.addrId = areaIds.length && areaIds[areaIds.length - 1];
-      param.provinceId = areaIds.length && areaIds[0];
-    }
-  },
   mounted() {
       this.getDataList();
       this.initFormatter();
-      this.getAreaInfo()
+      this.getAreaInfo();
   }
 }
 </script>

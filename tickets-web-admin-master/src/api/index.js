@@ -113,6 +113,9 @@ export const saveTicket = (params) =>{
 export const getTicket = (ticketId,params) =>{
   return getRequest(ticketsInfo + `getTicket/${ticketId}`, params);
 };
+export const publishState = (params) =>{
+  return postPureRequest(ticketsInfo + "publishState", params);
+};
 
 //商品属性管理
 let goodsAttr = '/manage/product/attribute/';
