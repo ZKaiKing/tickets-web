@@ -120,11 +120,82 @@
           <FormItem label="门票详情" prop="detailHtml">
             <editor ref="editor" :value="ticketForm.detailHtml" @on-change="handleChange2" style="width:550" />
           </FormItem>
+
+          <div>
+            <Divider orientation="left">门票档次</Divider>
+            <FormItem class="form-item">
+              <Button @click="addTicketGrade" type="success" ghost icon="ios-add" style="margin-left: 8px">增加档次</Button>
+            </FormItem>
+
+            <!-- 门票档次 数据start -->
+            <Row>
+              <Table border ref="defaultColumns" :columns="defaultColumns" :data="ticketForm.ticketGradeList" >
+                <template slot-scope="{index,row }" slot="gradeName">
+                  <Input :disabled="ticketForm.isQuery" type="text" clearable placeholder="请输入" v-model="row.gradeName"
+                  @on-change="updateTableInputVal(index,row,'gradeName')" />
+                </template>
+                <template slot-scope="{index,row }" slot="sellPrice">
+                  <InputNumber :disabled="ticketForm.isQuery" :min="0" :step="1" :precision="2" type="text" clearable placeholder="请输入" v-model="row.sellPrice"
+                  @on-change="updateTableInputVal(index,row,'sellPrice')" />
+                </template>
+                <template slot-scope="{index,row }" slot="rowSum">
+                  <!-- <div v-for="(tabItem,tabIndex) in ticketForm.ticketSceneList" :key="tabIndex"> -->
+                  <InputNumber :disabled="ticketForm.isQuery" :min="0" :step="1" :precision="0" type="text" clearable placeholder="请输入" v-model="row.rowSum"
+                  @on-change="updateTableInputVal(index,row,'rowSum')" />
+                </template>
+                <template slot-scope="{ index , row }" slot="action2">
+                  <Button type="primary" size="small" @click="deteleRow(index,row)">删除</Button>
+                </template>
+
+              </Table>
+            </Row>
+          </div>
+            <!-- 门票档次 数据 end -->
+
+          <!-- 库存价格管理 start-->
+          <div>
+            <Divider orientation="left">库存价格管理</Divider>
+            <Row>
+              <div v-for="(stockItem,stockIndex) in ticketForm.ticketGradeList" :key="stockIndex">
+                <Table border ref="stockSaleColumns" :columns="stockSaleColumns" :data="stockItem.ticketSeatList" >
+                  <template slot-scope="{index,row }" slot="gradeName">
+                    {{row.gradeName}}
+                    <!-- <Input :disabled=true type="text" v-model="row.gradeName" clearable placeholder="请输入" style="width: 200px"/> -->
+                  </template>
+                  <template slot-scope="{index,row }" slot="seatRow">
+                    {{row.seatRow}}
+                    <!-- <Input type="text" v-model="row.seatRow" clearable placeholder="请输入" style="width: 200px"/> -->
+                  </template>
+                  <template slot-scope="{index,row }" slot="seatSum">
+                    <InputNumber :min="0" :step="1" :precision="0" v-model="row.seatSum" 
+                    @on-change="updateStockInputVal(index,row,stockIndex,'seatSum')"/>
+                  </template>
+                  <template slot-scope="{index,row }" slot="seatRange">
+                    {{row.minRange}}~{{row.maxRange}}
+                    <!-- <Input type="text" v-model="row.gradeName" clearable placeholder="请输入" style="width: 200px"/> -->
+                  </template>
+                </Table>
+              </div>
+              <!-- <Table border ref="stockSaleColumns" :columns="stockSaleColumns" :data="ticketForm.ticketGradeList" >
+                <template slot-scope="{index,row }" slot="gradeName">
+                  <Row v-for="(tabItem,tabIndex) in row.ticketSeatList" :key="tabIndex">
+                    <Input type="text" v-model="tabItem.gradeName" clearable placeholder="请输入" style="width: 200px"/>
+                  </Row>
+                </template>
+              </Table> -->
+            </Row>
+          </div>  
+
+          {{ticketForm.ticketGradeList}}
+
+          <!-- 库存价格管理 stockSaleColumns end-->
+          
         </Form>
         <div slot="footer">
           <Button type="text" @click="cancelSubmit()">取消</Button>
           <Button type="primary" :loading="submitLoading" @click="submitInfo">提交</Button>
        </div>
+
       </Modal>
       <!-- modal table end -->
       
@@ -150,66 +221,67 @@ export default {
   },
     data() {
         return {
-            searchForm: {
-                publishState: "",
-                pageNo: 1,
-                pageSize: 10,
-                startDate: "",
-                endDate: "",
-                ticketName: ""
-            },
-            columns: [
-                { key: "ticketId", type: "selection", width: 60, fixed: "left" },
-                {
-                    title: "门票名称",
-                    key: "name",
-                    align: "center",
-                    minWidth: 100,
-                    sortable: true
-                },
-                { title: "销量", key: "salesVolume", align: "center", minWidth: 100 },
-                { title: "价格", key: "minSellPrice", align: "center", minWidth: 100 },
-                { title: "状态", slot: "publishState", align: "center", minWidth: 80 },
-                { title: "时间", slot: "publishTime", align: "center", minWidth: 80 },
-                {
-                    title: "操作",
-                    slot: "action",
-                    align: "center",
-                    width: 200,
-                    fixed: "right"
-                }
-            ],
-            tableData: [],
-            loading: true,
-            total: 0,
-            selectList: [],
-            selectCount: 0,
-            tableData: [],
-            ticketModalVisible: false,
-            ticketForm: {
-              name: "",
-              ticketId: "",
-              ticketSceneList: [],
-              location: [],
-              sort: 0,
-              picture: "",
-              purchaseHtml: "",
-              detailHtml: "",
-              addrDetail: "",
-              addrId: "",
-              latitude: "",
-              longitude: "",
-              provinceId: "",
-              ticketGradeList: [],
-              addrName: []
-            },
-            ticketFormValidate: {
-              name: [{ required: true, message: "门票名称不能为空", trigger: "blur" }]
-            },
-            dateTimeSet:{
-              date: "",
-              time: ""
-            },
+          searchForm: {
+              publishState: "",
+              pageNo: 1,
+              pageSize: 10,
+              startDate: "",
+              endDate: "",
+              ticketName: ""
+          },
+          columns: [
+              { key: "ticketId", type: "selection", width: 60, fixed: "left" },
+              {
+                  title: "门票名称",
+                  key: "name",
+                  align: "center",
+                  minWidth: 100,
+                  sortable: true
+              },
+              { title: "销量", key: "salesVolume", align: "center", minWidth: 100 },
+              { title: "价格", key: "minSellPrice", align: "center", minWidth: 100 },
+              { title: "状态", slot: "publishState", align: "center", minWidth: 80 },
+              { title: "时间", slot: "publishTime", align: "center", minWidth: 80 },
+              {
+                  title: "操作",
+                  slot: "action",
+                  align: "center",
+                  width: 200,
+                  fixed: "right"
+              }
+          ],
+          tableData: [],
+          loading: true,
+          total: 0,
+          selectList: [],
+          selectCount: 0,
+          tableData: [],
+          ticketModalVisible: false,
+          ticketForm: {
+            name: "",
+            ticketId: "",
+            ticketSceneList: [],
+            location: [],
+            sort: 0,
+            picture: "",
+            purchaseHtml: "",
+            detailHtml: "",
+            addrDetail: "",
+            addrId: "",
+            latitude: "",
+            longitude: "",
+            provinceId: "",
+            ticketGradeList: [{ticketSeatList:[]}],
+            addrName: []
+          },
+          
+          ticketFormValidate: {
+            name: [{ required: true, message: "门票名称不能为空", trigger: "blur" }]
+          },
+          dateTimeSet:{
+            date: "",
+            time: ""
+          },
           options1: {
               disabledDate (date) {
                 return date && date.valueOf() < Date.now() - 86400000;
@@ -220,7 +292,67 @@ export default {
           modalVisible: false,
           areaData: [],
           geocoder: "",
-          citylocation: ""
+          citylocation: "",
+          originGradeData: [],
+          defaultColumns: [
+            {
+              type: "selection",
+              key: 'gradeId',
+              width: 60, 
+              fixed: "left"
+            },
+            {
+              title: '档次名称',
+              slot: 'gradeName',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: '销售价（元）',
+              slot: 'sellPrice',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: '档次排数',
+              slot: 'rowSum',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: "操作",
+              slot: "action2",
+              align: "center",
+              width: 200,
+              fixed: "right"
+            }
+          ],
+          stockSaleColumns: [
+            {
+              title: '档次名称',
+              slot: 'gradeName',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: '座位区',
+              slot: 'seatRow',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: '座位数量',
+              slot: 'seatSum',
+              align: 'center',
+              minWidth: 100
+            },
+            {
+              title: '对应座位号范围',
+              slot: 'seatRange',
+              align: 'center',
+              minWidth: 100
+            }
+          ],
         };
     },
     methods: {
@@ -501,6 +633,9 @@ export default {
           this.ticketForm.purchaseHtml = res.data.purchaseHtml;
           this.ticketForm.sort = res.data.sort;
           this.ticketForm.ticketGradeList = res.data.ticketGradeInfoList;
+          // this.originGradeData = res.data.ticketGradeInfoList.slice(0);
+          // console.log("获取原始数据");
+          // console.log(this.originGradeData);
           this.geolocation_latlng();
           }
         });
@@ -583,6 +718,147 @@ export default {
             });
           }
         });
+      },
+      initColumns (){
+
+      },
+      addTicketGrade () {
+        this.ticketForm.ticketGradeList.push({
+          gradeId: this.ticketForm.ticketGradeList.gradeId || 0,
+          gradeName: this.ticketForm.ticketGradeList.gradeName || "",
+          rowSum: this.ticketForm.ticketGradeList.rowSum || 0,
+          sellPrice: this.ticketForm.ticketGradeList.sellPrice || 0.00,
+          ticketSeatList: this.ticketForm.ticketGradeList.ticketSeatList || [],
+        })
+      },
+      updateTableInputVal (index, row, attrName){
+        let tabelData = this.ticketForm.ticketGradeList;
+        let originGradeData = JSON.parse(JSON.stringify(tabelData));
+        tabelData[index][attrName] = row[attrName];
+        if (row.gradeId !=0 && (attrName == "rowSum" || attrName == "gradeName")){
+          console.log(row);
+          let minRan = 0;
+          let maxRan = 0;
+          console.log(originGradeData);
+          console.log(tabelData);
+
+          if(attrName == "rowSum"){
+              let ticketSeatList = tabelData[index]["ticketSeatList"];
+              let originRowSum = originGradeData[index].rowSum;
+              // let seatRow = originGradeData[index].ticketSeatList[originGradeData[index].ticketSeatList.length-1].seatRow;
+              if( row.rowSum > originRowSum ){
+                for(let indexof = 1; indexof <= row.rowSum - originRowSum ; indexof++){
+                  tabelData[index]["ticketSeatList"].push({
+                    gradeName: tabelData[index]["gradeName"],
+                    seatRow: 0,
+                    seatSum: 0,
+                    seatId: 0,
+                    minRange: 0,
+                    maxRange: 0
+                  });
+                }
+                console.log("tabelData");
+                console.log(tabelData);
+              }
+              if(row.rowSum < originRowSum){
+                for(let indexof = 1; indexof <= originRowSum - row.rowSum  ; indexof++){
+                  tabelData[index]["ticketSeatList"].splice(--originRowSum,1)
+                }
+                for(let i = originRowSum ; i >= 0 ; i--){
+
+                }
+              }
+          }
+          if(attrName == "gradeName"){
+            for(let indexof = 1; indexof <= row.rowSum; indexof++){
+              let ticketSeatList = tabelData[index]["ticketSeatList"];
+              ticketSeatList[indexof-1].gradeName = row.gradeName;
+            }
+          }
+        }
+        else if (row.gradeId == 0 && (attrName == "rowSum" || attrName == "gradeName")) {
+          tabelData[index]["ticketSeatList"] = [];
+          console.log(row);
+          let minRan = 0;
+          let maxRan = 0;
+          //刷新库存价格表
+          for(let indexof = 1; indexof <= row.rowSum; indexof++){
+            tabelData[index]["ticketSeatList"].push({
+              gradeName: tabelData[index]["gradeName"],
+              seatRow: 0,
+              seatSum: 1,
+              seatId: 0,
+              minRange: 0,
+              maxRange: 0
+            });
+            let ticketSeatList = tabelData[index]["ticketSeatList"];
+            if(indexof == 1){
+              minRan = 1;
+              maxRan =ticketSeatList[indexof-1].seatSum;
+            }else{
+              minRan = 1+maxRan;
+              maxRan = ticketSeatList[indexof-1].seatSum + maxRan;
+            }
+            console.log(maxRan);
+            ticketSeatList[indexof-1].minRange = minRan;
+            ticketSeatList[indexof-1].maxRange = maxRan;
+          }
+        }
+        //更新座位区
+        let temp = 0;//计数器
+        for(let i = 0 ; i < tabelData.length; i++){
+          let ticketSeatData = tabelData[i]["ticketSeatList"];
+          for( let j = 1 ; j <= tabelData[i].rowSum ; j++){
+            temp ++;
+            ticketSeatData[j-1].seatRow = temp;
+          }
+        }
+      },
+      updateStockInputVal(index, row, stockIndex,attrName){
+        const self = this;
+        let tabelDatas = self.ticketForm.ticketGradeList[stockIndex].ticketSeatList;
+        console.log(tabelDatas);
+        tabelDatas[index][attrName] = row[attrName];
+        if(attrName == "seatSum"){
+          console.log(tabelDatas.length);
+          // let minRan = 0;
+          // let maxRan = 0;
+          for(let i = 1 ; i<= tabelDatas.length; i++){
+          //   if(i ==1 ){
+          //     minRan = 1;
+          //     maxRan =tabelDatas[i-1].seatSum;
+          //   }else{
+          //     minRan = 1+maxRan;
+          //     maxRan = maxRan + tabelDatas[i-1].seatSum;
+          //   }
+          //   tabelDatas[i-1]["minRange"] = minRan;
+          //   tabelDatas[i-1]["maxRange"] = maxRan;
+            tabelDatas[i-1]["minRange"] = 1;
+            tabelDatas[i-1]["maxRange"] = tabelDatas[i-1].seatSum;
+          }
+        }
+      },
+      deteleRow(index,row) {
+        console.log(row);
+        const self = this;
+        let num = index+1;
+        if(row.gradeId != 0 && row.rowSum != 0){
+          self.$Message.error({
+            title: "提示",
+            content: "请从排数数值最大的排数进行删除",
+            duration: 5
+          });
+        }
+        else{
+          self.$Modal.confirm({
+            title: "提示",
+            content: "请确认是否要删除第" + num + "个档次？" ,
+            onOk: () => {
+              self.ticketForm.ticketGradeList.splice(index,1);
+              self.$Message.success("删除成功");
+            }
+          });
+        }
       }
     },
   mounted() {
