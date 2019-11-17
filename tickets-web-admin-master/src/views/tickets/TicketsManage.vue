@@ -598,7 +598,7 @@ export default {
         this.modalType = 0;
         this.modalTitle = "添加门票";
         this.$refs.ticketForm.resetFields();
-        this.ticketForm.ticketId = 0;
+        this.ticketForm.ticketId = "";
         this.ticketModalVisible = true;
         this.ticketForm.location = [];
         this.ticketForm.ticketSceneList = [];
