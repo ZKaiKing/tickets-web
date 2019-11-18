@@ -54,7 +54,7 @@
           <FormItem class="form-item">
             <Button @click="addScene" type="success" ghost icon="ios-add" style="margin-left: 8px">增加场次</Button>
           </FormItem>
-          {{ticketForm}}
+          <!-- {{ticketForm}} -->
           <div v-for="(tabItem,tabIndex) in ticketForm.ticketSceneList" :key="tabIndex">
             <Divider orientation="left">场次{{tabIndex+1}}</Divider>
             <Card class="card">
@@ -186,7 +186,7 @@
             </Row>
           </div>  
 
-          {{ticketForm.ticketGradeList}}
+          <!-- {{ticketForm.ticketGradeList}} -->
 
           <!-- 库存价格管理 stockSaleColumns end-->
           
@@ -373,7 +373,7 @@ export default {
                     draggable: false,
                     position: result.detail.location
                 });
-                console.log('所在位置: ' + result.detail.location);
+                // console.log('所在位置: ' + result.detail.location);
                 //经度
                 self.ticketForm.longitude = result.detail.location.lat;
                 //纬度
@@ -383,9 +383,9 @@ export default {
         //调用城市服务信息
         self.citylocation = new qq.maps.CityService({
             complete : function(results){
-              console.log(results);
-              console.log(results.detail.detail);
-              console.log(results.detail.latLng);
+              // console.log(results);
+              // console.log(results.detail.detail);
+              // console.log(results.detail.latLng);
                 map.setCenter(results.detail.latLng);
                 // city.style.display = 'inline';
                 // city.innerHTML = '所在位置: ' + results.detail.name;
@@ -408,12 +408,12 @@ export default {
           longitudes = event.latLng.getLat();
           //纬度
           latitudes = event.latLng.getLng();
-          console.log(longitudes);
-          console.log(latitudes);
-          console.log(event);
+          // console.log(longitudes);
+          // console.log(latitudes);
+          // console.log(event);
           //设置经纬度信息
           var latLng = new qq.maps.LatLng(longitudes, latitudes);
-          console.log(latLng);
+          // console.log(latLng);
           //调用城市经纬度查询接口实现经纬查询
           self.citylocation.searchCityByLatLng(latLng);
             alert('您点击的位置为: [' + event.latLng.getLat() + ', ' +
@@ -481,7 +481,7 @@ export default {
           var lng = parseFloat(self.ticketForm.latitude);
           //设置经纬度信息
           var latLng = new qq.maps.LatLng(lat, lng);
-          console.log(latLng);
+          // console.log(latLng);
           //调用城市经纬度查询接口实现经纬查询
           self.citylocation.searchCityByLatLng(latLng);
       },
@@ -651,7 +651,7 @@ export default {
             let param = this.ticketForm;
             self.setParam(param);
             delete self.ticketForm.location;
-            console.log(param);
+            // console.log(param);
             this.submitLoading = true;
             saveTicket(param).then(res => {
               this.ticketForm.location = [];
@@ -736,11 +736,11 @@ export default {
         let originGradeData = JSON.parse(JSON.stringify(tabelData));
         tabelData[index][attrName] = row[attrName];
         if (row.gradeId !=0 && (attrName == "rowSum" || attrName == "gradeName")){
-          console.log(row);
+          // console.log(row);
           let minRan = 0;
           let maxRan = 0;
-          console.log(originGradeData);
-          console.log(tabelData);
+          // console.log(originGradeData);
+          // console.log(tabelData);
 
           if(attrName == "rowSum"){
               let ticketSeatList = tabelData[index]["ticketSeatList"];
@@ -757,8 +757,8 @@ export default {
                     maxRange: 0
                   });
                 }
-                console.log("tabelData");
-                console.log(tabelData);
+                // console.log("tabelData");
+                // console.log(tabelData);
               }
               if(row.rowSum < originRowSum){
                 for(let indexof = 1; indexof <= originRowSum - row.rowSum  ; indexof++){
@@ -778,7 +778,7 @@ export default {
         }
         else if (row.gradeId == 0 && (attrName == "rowSum" || attrName == "gradeName")) {
           tabelData[index]["ticketSeatList"] = [];
-          console.log(row);
+          // console.log(row);
           let minRan = 0;
           let maxRan = 0;
           //刷新库存价格表
@@ -799,7 +799,7 @@ export default {
               minRan = 1+maxRan;
               maxRan = ticketSeatList[indexof-1].seatSum + maxRan;
             }
-            console.log(maxRan);
+            // console.log(maxRan);
             ticketSeatList[indexof-1].minRange = minRan;
             ticketSeatList[indexof-1].maxRange = maxRan;
           }
@@ -817,10 +817,10 @@ export default {
       updateStockInputVal(index, row, stockIndex,attrName){
         const self = this;
         let tabelDatas = self.ticketForm.ticketGradeList[stockIndex].ticketSeatList;
-        console.log(tabelDatas);
+        // console.log(tabelDatas);
         tabelDatas[index][attrName] = row[attrName];
         if(attrName == "seatSum"){
-          console.log(tabelDatas.length);
+          // console.log(tabelDatas.length);
           // let minRan = 0;
           // let maxRan = 0;
           for(let i = 1 ; i<= tabelDatas.length; i++){
@@ -839,7 +839,7 @@ export default {
         }
       },
       deteleRow(index,row) {
-        console.log(row);
+        // console.log(row);
         const self = this;
         let num = index+1;
         if(row.gradeId != 0 && row.rowSum != 0){
