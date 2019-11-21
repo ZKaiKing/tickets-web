@@ -845,7 +845,7 @@ export default {
         if(row.gradeId != 0 && row.rowSum != 0){
           self.$Message.error({
             title: "提示",
-            content: "请从排数数值最大的排数进行删除",
+            content: "请从该档次: 【"+row.gradeName+"】  排数数值最大的排数进行删除",
             duration: 5
           });
         }
