@@ -163,7 +163,7 @@
                     <!-- <Input :disabled=true type="text" v-model="row.gradeName" clearable placeholder="请输入" style="width: 200px"/> -->
                   </template>
                   <template slot-scope="{index,row }" slot="seatRow">
-                    {{row.seatRow}}
+                    {{row.seatRow}}<span>排</span>
                     <!-- <Input type="text" v-model="row.seatRow" clearable placeholder="请输入" style="width: 200px"/> -->
                   </template>
                   <template slot-scope="{index,row }" slot="seatSum">
