@@ -486,7 +486,7 @@ export default {
           self.citylocation.searchCityByLatLng(latLng);
       },
       getAreaInfo() {
-				axios.get('../static/data/areas.json').then(res => {
+				axios.get('./static/data/areas.json').then(res => {
 					let areaData = res.data
 					this.convertArea(areaData)
 					this.areaData = areaData;
