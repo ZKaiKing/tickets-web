@@ -375,9 +375,9 @@ export default {
                 });
                 // console.log('所在位置: ' + result.detail.location);
                 //经度
-                self.ticketForm.longitude = result.detail.location.lat;
+                self.ticketForm.longitude = result.detail.location.lng;
                 //纬度
-                self.ticketForm.latitude = result.detail.location.lng;
+                self.ticketForm.latitude = result.detail.location.lat;
             }
         });
         //调用城市服务信息
