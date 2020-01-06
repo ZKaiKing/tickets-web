@@ -23,9 +23,13 @@
           <Form-item label="下单时间" prop="orderTime">
             <DatePicker ref="dateTimePicker" placement='top-start' type="daterange" split-panels placeholder="请选择年月日" @on-change="selectDate" clearable class="input"></DatePicker>
           </Form-item>
+          <Form-item label="场次" prop="sceneName">
+            <Input type="text" v-model="searchForm.sceneName" clearable placeholder="场次" style="width: 200px" />
+          </Form-item>
           <Form-item  style="margin-left:50px;" class="br">
             <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
             <Button @click="handleReset" type="primary" ghost icon="md-remove-circle" style="margin-left: 8px">重置</Button>
+            <Button @click="handleRefund" type="primary" icon="ios-editor" style="margin-left: 8px">退款</Button>
           </Form-item>
         </Form>
       </Row>
@@ -35,12 +39,12 @@
       <Row>
         <Table border ref="table" :columns="columns" :data="tableData" :loading="loading" @on-selection-change="saveSelect">
           <template slot-scope="{ row }" slot="orderState">
-            <label v-if="row.orderState === 1" text="待付款" />
-            <label v-if="row.orderState === 2" text="已取消" />
-            <label v-if="row.orderState === 3" text="待消费" />
-            <label v-if="row.orderState === 4" text="已完成" />
-            <label v-if="row.orderState === 5" text="退款中" />
-            <label v-if="row.orderState === 6" text="已退款" />
+            <label v-if="row.orderState === 1" >待付款</label>
+            <label v-if="row.orderState === 2" >已取消</label>
+            <label v-if="row.orderState === 3" >待消费</label>
+            <label v-if="row.orderState === 4" >已完成</label>
+            <label v-if="row.orderState === 5" >退款中</label>
+            <label v-if="row.orderState === 6" >已退款</label>
           </template>
           <template slot-scope="{ row }" slot="action">
             <Button type="primary" size="small" @click="editData(row)">查看</Button>
@@ -98,7 +102,7 @@
 </template>
 
 <script>
-  import { searchOrderList } from "@/api/index";
+  import { searchOrderList, orderRefund } from "@/api/index";
   import uploadPicInput from "@/components/upload-pic-input";
   export default {
     components: {
@@ -172,6 +176,31 @@
         this.searchForm.pageNo = 1;
         this.searchForm.pageSize = 10;
         this.getDataList();
+      },
+      handleRefund() {
+        if(JSON.stringify(this.searchForm.sceneName) === '{}') {
+          this.$Message.error({
+              content: '操作失败，场次名称必填',
+              duration: 5
+            });
+        }
+        var orderRefundDto = {
+          sceneName: this.searchForm.sceneName,
+        }
+        orderRefund(orderRefundDto).then(res => {
+          this.loading = false;
+          if (res.resultCode == 'SUCCESS') {
+            this.$Message.success({
+              content: '操作成功',
+              duration: 5
+            });
+          } else {
+            this.$Message.error({
+              content: '操作失败：' + res.message,
+              duration: 5
+            });
+          }
+        });
       },
       changePage(pageNo) {
         this.searchForm.pageNo = pageNo;

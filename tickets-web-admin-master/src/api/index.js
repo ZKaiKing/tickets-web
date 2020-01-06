@@ -98,6 +98,10 @@ export const dealWithFeedBack = (params) => {
 export const searchOrderList = (params) => {
   return postPureRequest("/manage/order/searchOrderList", params);
 };
+//订单退款
+export const orderRefund = (params) => {
+  return postPureRequest("/manage/order/orderRefund", params);
+};
 //系统流水
 export const searchAccountLog = (params) => {
   return postPureRequest("/manage/order/searchAccountLog", params);
