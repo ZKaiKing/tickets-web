@@ -7,7 +7,7 @@ import { getStore, setStore,localStore } from './storage';
 let base = '/tickets';
 
 // 超时设定
-axios.defaults.timeout = 15000;
+axios.defaults.timeout = 1500000;
 axios.interceptors.request.use(config => {
   return config;
 }, err => {
